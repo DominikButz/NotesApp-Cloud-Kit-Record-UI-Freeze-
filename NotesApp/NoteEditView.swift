@@ -20,7 +20,7 @@ struct NoteEditView: View {
     var body: some View {
         Form {
             TextField("Title", text: $title)
-                .onChange(of: self.title) { _, newValue in
+                .onChange(of: self.title) { newValue in
                     self.note.title = newValue
                     self.saveNote()
                 }
@@ -28,7 +28,7 @@ struct NoteEditView: View {
                 
             TextEditor(text: $text)
                 .frame(minHeight: 300)
-                .onChange(of: self.text) { _, newValue in
+                .onChange(of: self.text) { newValue in
                     self.note.text = newValue
                     self.saveNote()
                 }

@@ -6,14 +6,14 @@
 
 Calling record(for: ..) on the core data NSPersistentCloudKitContainer instance makes the app unresponsive under certain circumstances.
 
-Apparently, this bug only appeared with iOS 17 / MacOS 14
+Apparently, this bug only appeared with iOS 17.x / MacOS 14.x
 
 
 ### Prerequisites
 
 - active Apple developer account
 - signed in iCloud on Simulator / real device
-- XCode 15.1 or later
+- XCode 15.1 or later (bug is still there with XCode 15.2!)
 - MacOS 14.0 or later / iOS 17.0 or later
 
 
