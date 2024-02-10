@@ -2,6 +2,13 @@
 
 ## Minimum Reproducible Example for the MacOS 14 / iOS 17 Cloud Kit UI freeze bug
 
+
+Update (10/2/2024): Apple replied on the Apple developer forum - it seems calls to the CK record or recordID should always be done on a background thread. Moreover, it is better to use a custom id to handle user favorites / bookmarking etc.  I have updated the repo accordingly.
+
+[Original post and answer](https://developer.apple.com/forums/thread/746080)
+
+
+
 ### Bug Description
 
 Calling record(for: ..) on the core data NSPersistentCloudKitContainer instance makes the app unresponsive under certain circumstances.

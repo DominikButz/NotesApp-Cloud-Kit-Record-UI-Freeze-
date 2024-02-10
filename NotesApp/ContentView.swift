@@ -27,22 +27,16 @@ struct ContentView: View {
     
     var body: some View {
         layout()
-        .task {
-            DispatchQueue.main.async {
-                let persistence = PersistenceController.shared
+            .task {
                 
-                for note in self.notes {
-                    if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
-                        if self.favouriteRecordNames.contains(recordName) {
-                            self.favouriteNotes.append(note)
-                        }
-                    }
-                }
+                self.setFavoriteState(notes: Array(self.notes))
+            
+
             }
 
-        }
-
     }
+    
+    
     
     private func layout()-> some View {
         NavigationSplitView {
@@ -176,24 +170,25 @@ struct ContentView: View {
     
     private func favoriteButton(note: Note) -> some View {
         Button {
-            let persistence = PersistenceController.shared
-            if self.favouriteNotes.contains(note) {
-                withAnimation {
-                    self.favouriteNotes = self.favouriteNotes.filter({$0 != note})
-                }
-                if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
-                    self.favouriteRecordNames = self.favouriteRecordNames.filter({$0 != recordName})
-                }
-            } else {
-                withAnimation {
-                    self.favouriteNotes.append(note)
-                }
-                if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
-                    self.favouriteRecordNames.insert(recordName)
-                }
-            }
+            
         } label: {
             Label(self.favouriteNotes.contains(note) ? "Remove from Favourites" : "Add to Favourites", systemImage: self.favouriteNotes.contains(note) ? "star.slash" : "star.fill")
+        }
+    }
+    
+    private func setFavoriteState(notes: [Note]) {
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1) {
+            let persistence = PersistenceController.shared
+            
+            for note in notes {
+                if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
+                    if self.favouriteRecordNames.contains(recordName) {
+                        DispatchQueue.main.async {
+                            self.favouriteNotes.append(note)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -202,6 +197,35 @@ struct ContentView: View {
             let newNote = Note(context: viewContext)
             self.selectedNote = newNote
 
+        }
+    }
+    
+    private func updateFavoriteState(note:Note) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let persistence = PersistenceController.shared
+            if self.favouriteNotes.contains(note) {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.favouriteNotes = self.favouriteNotes.filter({$0 != note})
+                    }
+                }
+                if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
+                    DispatchQueue.main.async {
+                        self.favouriteRecordNames = self.favouriteRecordNames.filter({$0 != recordName})
+                    }
+                }
+            } else {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.favouriteNotes.append(note)
+                    }
+                }
+                if let recordName = persistence.container.record(for: note.objectID)?.recordID.recordName {
+                    DispatchQueue.main.async {
+                        self.favouriteRecordNames.insert(recordName)
+                    }
+                }
+            }
         }
     }
 
